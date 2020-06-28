@@ -1,0 +1,65 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# Module 6 - Assignment 1
+## Kiser, Stephen 
+### Lubridate
+```{r Loading in Tidyverse and Lubridate}
+library(tidyverse)
+
+library(lubridate)
+
+Appointments <- read_csv("Appointments.csv")
+
+```
+
+### Working with Dates
+```{r working_with_dates}
+Appointments <- mutate(Appointments, ReservationYear = 2019)
+
+Appointments <- Appointments %>% 
+  mutate(
+    ReservationDate = make_date(month=ReservationMonth, day=ReservationDay, year=ReservationYear),
+    CreationDate = make_date(month = CreationMonth, day = CreationDay, year= CreationYear),
+    ReservationSpan = (ReservationDate - CreationDate)
+)
+
+```
+
+### Exploratory Analysis
+```{r Exploratory Analysis}
+summary(Appointments)
+Appointments$ReservationSpan <- as.numeric(as.difftime(Appointments$ReservationSpan, units = "days"))
+summary(Appointments)
+
+```
+
+a. What is the average time between appointment creation and the actual reservation date?
+
+The average time between appointment creation and actual reservation date is 38.53 days.
+
+b. What was the max time?
+
+The max time between appointment creation and actual reservation date is 207 days.
+
+c. What was the min time? 
+
+The minimum time between appointment creation and actual reservation date is 1 day.
+
+```{r correlation}
+cor(Appointments$ReservationSpan,Appointments$Show,method = "pearson")
+```
+a. Are ReservationSpan and Show highly correlated?
+
+ReservationSpan and Show are not highly correlated.
+
+```{r bar chart}
+ggplot(Appointments, aes(x=Show,))+
+  geom_bar()
+```
+
+a. Based on 0 being no show and 1 being show, do most people make their appointments?
+
+Yes, most people make their appointments.

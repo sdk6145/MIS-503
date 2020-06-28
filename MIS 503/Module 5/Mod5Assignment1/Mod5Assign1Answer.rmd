@@ -1,0 +1,90 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# Module 5 - Assignment 1
+## Kiser, Stephen
+### Data Wrangling
+
+```{r}
+library(tidyverse)
+library(readxl)
+UN_migrant <- read_excel("UN_migrant.xlsx", 
+    sheet = "Table 6", skip = 15)
+View(UN_migrant)
+```
+
+### Part 2 - Cleaning Data with dplyr
+```{r Part 2}
+UN_migrant <- rename(UN_migrant, "Country"= "...2", "Country_Code"="...4", "Type"="...5", "1990" = "1990...6", "1995" = "1995...7", "2000" = "2000...8", "2005" = "2005...9", "2010" = "2010...10", "2015" = "2015...11")
+
+Migration <- select(UN_migrant, Country, Country_Code, Type, "1990", "1995", "2000", "2005", "2010", "2015")
+
+head(Migration, 6)
+```
+
+### Part 3 - Creating tidy data using tidyr
+```{r Part 3}
+Migration2 <- gather(Migration, "1990", "1995", "2000", "2005", "2010", "2015", key = "Year", value = "Cases")
+Migration2$Year <- as.integer(Migration2$Year)
+Migration2$Cases <- as.integer(Migration2$Cases)
+
+
+head(Migration2, 6)
+```
+
+### Part 4 - Research Questions
+```{r Part 4}
+RegionalMigration <- select(Migration2, Country, Country_Code, Type, Year, Cases) %>%
+  filter(Country %in% c("Africa", "Asia", "Europe", "Oceania", "Northern America", "South America"))
+
+Americas <- select(Migration2, Country, Country_Code, Type, Year, Cases) %>%
+  filter(Country %in% c("Central America", "South America", "Northern America"))
+```
+
+### Worldwide Migration based on Regions
+a. Which region in the world had the highest number of migrants in the year 2005? 
+Asia had the highest number of Migrants in 2005.
+
+b. Over the years, which region consistently has the most migrants every 5 year span? Which has the second most? 
+Asia has the most migrants every 5 year span and Africa has the second most.
+
+c. What region has seen the fewest migrants over the years? 
+South America has seen the fewest migrants over the years.
+
+d. Which plot was most useful in answering these questions and why? The scatterplot graph was more useful because I was able to see the trends of each country better.  It allowed me to see that the points for Asia were the highest every year.  The bar graph would be better in see the totals of all migrants in the world, and where the majority of them were.
+```{r Worldwide Migration}
+ggplot(RegionalMigration, aes(x= Year, y= Cases, color = Country))+
+  geom_point() +
+  labs(title = "Worldwide Migration", y="Migrants")
+ggplot(RegionalMigration, aes(x=Year, y= Cases, fill = Country))+
+  geom_col()+
+  labs(title = "Worldwide Migration", y="Migrants")+
+  scale_fill_discrete(name="Region of World")
+```
+
+### Americas Migration by Region
+a. In 1990, which region had the largest number of migrants for the Americas? 
+Central America
+
+b. Has this region continued to grow since 1990? 
+No, after 1990 the number of migrants in Central America have decreased.
+
+c. What trends do you notice happening in the Americas over the years? 
+Central America started off high and then drastically decreased, Northern America had an increase in 1995 and then slowly decreased in migrants.  Northern America started to plateau from 2010 to 2015. South America had almost no migrants from 1990 to 2010, and starting 2010 migrants increased and plateaued from 2010-2015.
+
+d. Specifically, has Northern America increased or decreased over the years? 
+Northern America has decreased over the years.
+
+e. Which plot was most useful in answering these questions and why? The scatterplot was more useful in answering these questions because I was able to see the trend of the regions better than in the bar graph.  It is hard to see the trend for Northern America from the bar graph, and was easier to see its trend in the scatterplot.
+```{r America Migration}
+ggplot(Americas, aes(x=Year, y= Cases, color = Country))+
+  geom_point()+
+  labs(title = "Americas Migration", y= "Migrants")
+ggplot(Americas, aes(x=Year, y=Cases, fill= Country))+
+  geom_col()+
+  labs(title = "Americas Migration", y="Migrants")+
+  scale_fill_discrete(name="Americas Region")
+```
+

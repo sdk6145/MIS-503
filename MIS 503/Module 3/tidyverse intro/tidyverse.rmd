@@ -1,0 +1,35 @@
+#Introduction to tidyverse
+
+First, we need to do is load the tidyverse package
+
+```{r Loading tidyverse}
+library(tidyverse)
+head(mpg)
+```
+
+For ggplot, we are going to use mpg to create a simple scatterplot of displacement by hwy.  There are actually multiple ways to write this coede. The first example below is how the book presents the code. (notice the placement of "+" sign)
+```{r}
+ggplot(data = mpg, aes(x=displ, y=hwy)) +
+  geom_point()
+
+ggplot(mpg) +
+  geom_point(aes(displ,hwy))
+```
+
+```{r plots for hwy vs displ}
+ggplot(data = mpg, aes(x=displ,y=hwy,color=class)) +
+  geom_point()
+
+ggplot(data = mpg, aes(x=displ,y=hwy,color=manufacturer)) +
+  geom_point()
+```
+
+```{r box plot}
+ggplot(data=mpg,aes(class,fill=class)) +
+geom_bar()
+```
+```{r}
+ggplot(mpg,aes(class,cty)) +
+  geom_boxplot()
+```
+

@@ -1,0 +1,40 @@
+#Assignment 1
+#3/28/2020
+#Stephen Kiser
+```{r loading in tidyverse and Diamonds}
+library(tidyverse)
+library(readr)
+diamonds_updated <- read_csv("diamonds_updated.csv")
+View(diamonds_updated)
+```
+
+Question 1
+
+Run descriptive statistics on Diamonds_updated data frame (you just imported) and provide the following information:
+
+What is the average (mean) price for diamonds?
+What is the minimum and maximum Price?
+
+```{r Question 1}
+#The average of price.
+mean(diamonds_updated$PRICE)
+#Min and Max of the variables
+summary(diamonds_updated)
+```
+Question #2
+
+Run a correlation analysis on the data frame.  Which two variables have the highest correlation and what is that correlation (hint: this would be the highest number in the chart that does not equal 1)?
+```{r Question2}
+cor(diamonds_updated, use= "complete.obs", method = "pearson")
+```
+
+The two variables that have the highest correlation are Price and weight.  The correlation is 0.9447266.
+
+
+Question 3
+Run a regression analysis on the data frame that uses price as the dependent variable with clarity, color and weight as the independent variables.  Remember, to find the value of the coefficients you must set the linear regression formula to an object and then execute the summary of that object (e.g., summary(model)). Which independent variables were significant (hint: these are the variables with values less than 0.05 in Pr(>|t|) column))?
+```{r Question 3}
+linear_reg <- lm(PRICE ~ CLARITY + COLOR + WEIGHT,data = diamonds_updated)
+summary(linear_reg)
+```
+

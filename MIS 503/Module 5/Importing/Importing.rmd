@@ -1,0 +1,16 @@
+
+# Importing
+## Stephen Kiser
+### Module 5 Lecture 1
+
+```{r Loading in stuff }
+library(tidyverse)
+NFL <- read_csv("NFL.csv", col_types = cols(`Date Hired` = col_date(format = "%m/%d/%Y")))
+View(NFL)
+library(readxl)
+Employees <- read_excel("Employees.xlsx", 
+    col_types = c("numeric", "text", "text", 
+        "text", "date"))
+View(Employees)
+```
+

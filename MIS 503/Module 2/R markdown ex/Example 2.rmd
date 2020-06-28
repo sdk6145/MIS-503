@@ -1,0 +1,36 @@
+---
+editor_options:
+  chunk_output_type: console
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+# Example 2 of R Markdown
+
+# Stephen Kiser
+
+# March 21st, 2020
+
+Here is *italic*
+
+Here is **bold**
+```{r}
+library(tidyverse)
+```
+
+```{r Sample}
+a <- 1
+b <- 2
+a+b
+```
+
+Here is an example of plot
+
+```{r exampleplot}
+c <- 30
+d <- 40
+library(tidyverse)
+qplot(c,d)
+```
+

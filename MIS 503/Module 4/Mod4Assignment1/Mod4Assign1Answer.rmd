@@ -1,0 +1,84 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# Module 4 - Assignment 1
+## Kiser, Stephen
+### Data Transformation
+
+```{r Loading in tidyverse and dataset}
+library(tidyverse)
+state_income <- read_csv("state_income.csv")
+```
+
+#### State Incomes
+In this part of the assignment I will be taking a subset of data to which gives us smaller data to work with. I will be using 9 variables of the 18 variables in the dataset.  We will be using the name of the state and abbreviation.  Then we will be using the county and city name where the U.S. Census Bureau used for the data.Then we will use Aland which is the square ara of land at the location.  Finally the last three variables we will be using are the mean household income, median, and standard deviation.
+
+```{r Selecting the Variables}
+state_income2 <- select(state_income, State_ab, State_Name, County, City, Type, ALand, Mean, Median, Stdev)
+
+head(state_income2,10)
+
+```
+
+```{r Changing names of variables}
+state_income2 <- rename(state_income2, SquareArea = "ALand", IncomeMean = "Mean", IncomeMedian = "Median", IncomeStDev = "Stdev")
+
+head(state_income2, 10)
+```
+```{r Filtering North Carolina Data}
+NC_income <- filter(state_income2, State_ab == "NC")
+
+head(NC_income,10)
+```
+
+#### NC Incomes
+
+For this part of the assignment I will be using the North Carolina dataset I created in the previous part.  We will be summarizing the incomes within the state of North carolina.  We will be finding the incomes by county, city, and type.  First, I willl need to arrange the data by ascending order in the County column.
+
+```{r Arranging NC Data}
+NC_income <- arrange(NC_income, County)
+
+head(NC_income, 10)
+```
+
+```{r Summarizing NC Income}
+summary1 <- group_by(NC_income,County)
+summary1 <- summarise (summary1, mean= mean(IncomeMean))
+summary2 <- NC_income %>%
+ group_by(City) %>%
+ summarise (mean = mean(IncomeMean))
+```
+
+I created two new datasets called summary1 and summary2.  Summary1 has the counties of North Carolina and has the mean income in that county.  Summary2 is a dataset of cities in North Carolina and their average income.  Both datasets are arranged in A-Z for both counties and cities.
+```{r Summary 3 Dataset}
+summary3 <- NC_income %>%
+  group_by(Type) %>%
+  summarise(mean = mean(IncomeMean))
+```
+
+#### Income Visualization
+
+```{r Scatterplot of Summary1}
+ggplot(summary1, aes(County, mean)) +
+  geom_point()+
+  labs(title = "Scatterplot of County Income Data", y="Income")+
+  theme(axis.text.x = element_text(angle = 90, vjust=0.5,hjust = 1))
+```
+
+After making the scatterplot from dataset summary1 I will now will find the highest income and lowest income county.  The highest income county is Wake County.  The lowest income county is Stokes County.  The second lowest income county is Surry County.
+
+```{r AvgStateIncome Dataset}
+AvgStateIncome <- state_income2 %>%
+  group_by(State_ab) %>%
+  summarise(mean=mean(IncomeMean))
+
+AvgStateIncome <- filter(AvgStateIncome, grepl("N",State_ab))
+
+ggplot(AvgStateIncome, aes(State_ab, mean)) +
+  geom_point() +
+  labs(title = "Sample of Average State Incomes", x= "State Abbreviation", y= "Income")
+```
+
+After creating this scatterplot of 11 states with an "N" in their abreviation I am able to see the average incomes.  The largest average income was in New Jersey with 88657.64.  The smallest average income was in Tennessee 56271.95.  North Carolina had the third lowest average income of this sample.

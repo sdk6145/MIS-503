@@ -1,0 +1,35 @@
+```{r}
+library(tidyverse)
+```
+
+How to spread and gather data
+```{r Gather 1}
+table4a
+table4a %>%
+  gather("1999", "2000", key = "Year", value = "Cases")
+table4a <- table4a %>%
+  gather("1999", "2000", key = "Year", value = "Cases")
+table4a$Year <- as.integer(table4a$Year)
+```
+
+```{r Gather 2}
+table4b
+table4b <- table4b %>%
+  gather("1999", "2000", key = "Year", value = "Population")
+table4b$Year <- as.integer(table4b$Year)
+
+tablejoin <- left_join(table4a, table4b)
+```
+
+```{r Spreading}
+table2 
+Newtable2 <- spread(table2, key = "type", value = "count")
+```
+
+```{r separating}
+table3
+Newtable3 <- table3 %>%
+  separate(rate, into = c("cases", "population"), sep = "/", convert = TRUE)
+
+```
+

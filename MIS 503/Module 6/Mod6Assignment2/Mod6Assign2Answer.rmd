@@ -1,0 +1,139 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# Module 6 - Assignment 2
+## Kiser, Stephen 
+### Statistical Analyses
+
+```{r loading in everything}
+library(tidyverse)
+library(readxl)
+library(readr)
+
+Perceptions <- read_excel("Perceptions.xlsx")
+Insurance <- read_csv("Insurance.csv")
+Advertising <- read_csv("Advertising.csv")
+RespiratoryExchangeSample <- read_excel("RespiratoryExchangeSample.xlsx")
+
+```
+
+### Regression and Correlation
+Regression analysis is a statistical method that allows you to examine the relationship between two or more
+variables of interest. Correlation analysis is a method of statistical evaluation used to study the strength of a
+relationship between two, numerically measured, continuous variables (e.g. height and weight). This
+particular type of analysis is useful when a researcher wants to establish if there are possible connections
+between variables.
+
+### Insurance Costs
+We would like to determine if we can accurately predict insurance costs based upon the factors included in
+the data. We would also like to know if there are any connections between variables (for example, is age
+connected or correlated to charges).
+
+### Correlations of bmi, age, children and cost
+```{r correlations in Insurance Costs}
+Insurance2 <- select(Insurance, age, bmi, children, charges)
+cor(Insurance2)
+
+Corr_matrix <- cor(Insurance2)
+
+library(corrplot)
+library(RColorBrewer)
+corrplot(Corr_matrix, type="upper", order="hclust",
+ col=brewer.pal(n=8, name="RdYlBu"))
+
+```
+After creating this matrix and visual we are able to see which variables are highly correlated with each other.  Out of all the variables charges and age have the highest correlation at 0.29900819.  The least correlated variables are children and bmi.  None of these variables are highly correlated because we want a number closer to 1.0 to be considered highly correlated, and 0.299 is not close enough.
+
+
+### Regression Analysis
+```{r Regression Analysis}
+fit1 <- lm(data = Insurance2, charges ~ age+bmi+children)
+summary(fit1)
+```
+Age and BMI are the two variables who were significant to charges. Age had the largest impact on charges because the p-value was lower than BMI.  This shows that age has a bigger effect on people's insurance charges than how many children. Next we will look to see if gender or if the person is a smoker or not has an effect on insurance charges.  
+
+
+
+```{r Adding Smoker2 and Gender}
+Insurance <- mutate(Insurance, gender=ifelse(sex=="female",1,0))
+
+Insurance <- mutate(Insurance, smoker2=ifelse(smoker=="yes",1,0))
+
+fit2 <- lm(data = Insurance, charges ~ age + bmi + children + gender + smoker2)
+
+summary(fit2)
+```
+Gender does not have effect on insurance charges, however whether the person is a smoker or not does have an effect on their insurance charges.
+
+
+### Group Comparisons with t-tests
+The t-test is used to compare the values of the means from two samples and test whether it is likely that the
+samples are from populations having different mean values. This is often used to compare 2 groups to see if
+there are any significant differences between these groups
+
+## Caffeine Impacts on Respiratory Exchange Ratio
+A study of the effect of caffeine on muscle metabolism used volunteers who each underwent arm exercise
+tests. Half the participants were randomly selected to take a capsule containing pure caffeine one hour
+before the test. The other participants received a placebo capsule. During each exercise the subject's
+respiratory exchange ratio (RER) was measured. (RER is the ratio of CO2 produced to O2 consumed and is an
+indicator of whether energy is being obtained from carbohydrates or fats).
+The question you are trying to answer is whether caffeine impacts RER during exercise.
+
+```{r t.test}
+summary(RespiratoryExchangeSample)
+
+t.test(RespiratoryExchangeSample$Caffeine,RespiratoryExchangeSample$Placebo)
+```
+After executing a Welch T-test on Caffeine and Placebo variables in the Respiratory Exchange Sample data we see that the p-value is less than 2.2e-16.  This means that there is a significant difference between the two variables.  This means that those who took placebo capsules performed worse than those who took the caffeine pill, and that the caffeine pill had an effect on the respiratory system. Volunteers who took the caffeine pill had a higher RER than those who took the placebo pill.
+
+### Impact of Advertising
+You are a marketing researcher conducting a study to understand the impact of a new marketing campaign.
+To test the new advertisements, you conduct a study to understand how consumers will respond based on
+see the new ad compared to the previous campaign. One group will see the new ad and one group will see
+the older ads. They will then rate the ad on a scale of 0 to 100 as a percentage of purchase likelihood based
+on the ad.
+The question you are trying to answer is whether to roll out the new campaign or stick with the current
+campaign.
+```{r Advertising}
+summary(Advertising)
+
+t.test(Rating ~ Group, Advertising, var.equal=TRUE)
+```
+After executing the t-test on the ratings of the ads watched by either group we see there is not a significant difference between the two groups.  Group 1 watched the new ad and Group 2 watched the old ad and the average rating were, Group 1 52.33827 and Group 2 49.80779.  The p-value was 0.2113 which is above the 0.1 significant value. With this information the new advertising campaign would only bring a slight increase in ratings, and I do not think it should move forward.  The only reason the new ad campaign should move forward is if it costs less than the old because we are only getting about 50% from both ads.
+
+
+### ANOVA
+An ANOVA test is a way to find out if survey or experiment results are significant. In other words, they help
+you to figure out if you need to reject the null hypothesis or accept the alternate hypothesis. Basically, you’re
+testing groups to see if there’s a difference between them. Examples of when you might want to test
+different groups:
+-A group of psychiatric patients are trying three different therapies: counseling, medication and
+biofeedback. You want to see if one therapy is better than the others.
+- A manufacturer has two different processes to make light bulbs. They want to know if one process is
+better than the other.
+- Students from different colleges take the same exam. You want to see if one college outperforms the
+other.
+
+### Perceptions of Social Media Profiles
+This study examines how certain information presented on a social media site might influence perceptions of
+trust, connectedness and knowledge of the profile owner. Specifically, participants were shown weak,
+average and strong arguments that would influence their perceptions of the above variables. Using the
+dataset provided, the following code runs an ANOVA with post-hoc analyses to understand argument
+strength impacts on perceptions.
+
+```{r ANOVA}
+aov1 <- aov(Trust ~ Argument, data=Perceptions)
+summary(aov1)
+
+aov2 <- aov(Connectedness ~ Argument, data=Perceptions)
+summary(aov2)
+
+aov3 <- aov(Knowledge ~ Argument, data= Perceptions)
+summary(aov3)
+
+TukeyHSD(aov1)
+TukeyHSD(aov2)
+```
+After executing ANOVA tests on these three, Trust, Connectedness, and Knowledge variables on the Argument variable of a social media site we see only two variables were above significant.  These two variables are Trust and Connectedness.  The only variable that was not significant was Knowledge.  The Knowledge of the social media site was not affected by the argument on the social media site.  Trust and Connectedness was impacted by the arguments on social media sites.  After executing the TukeyHSD test for Trust we see that it is not strong-average because the p-adj is 0.9721584.  The argument level shown on each media site has a weak-average significance of the participant's perception of the social media site's trust.  After executing the test for Connectedness it also had a lower p-adj in weak-average result meaning that it also had the same effect on people's perception of the social media's connectedness from what level of argument is shown.

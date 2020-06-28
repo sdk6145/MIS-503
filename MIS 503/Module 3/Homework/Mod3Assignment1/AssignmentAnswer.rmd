@@ -1,0 +1,56 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# Module 3 - Assignment 1
+
+## Kiser, Stephen
+
+### Data Visualization
+
+For Assignment 1 I will be using datasets that contain the production and rankings of candy.  These datasets are given to me on the MIS-503 course.  I will now use these datasets to find out some data about different candy.
+```{r Loading in Datasets}
+library(tidyverse)
+candy_data <- read_csv("candy_data.csv")
+candy_production <- read_csv("candy_production.csv")
+```
+
+#### Visualization with Scatterplots (geom_point)
+
+```{r}
+ggplot(data= candy_data, aes(x= sugarpercent, y= pricepercent, label = competitorname)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_text(check_overlap = T, vjust = "bottom", nudge_y = 0.01, angle= 30, size= 2) +
+  labs(title = "Sugar by Price Scatterplot", x = "Sugar content (percentile)", y= "Price (percentile)")
+```
+
+After the completion of the scatterplot I was able to find which candy has the most sugar and lowest price, and the most expensive candy with the highest sugar content.  The candy that has the most sugar and lowest price is Dum Dums.  They have almost a 75 % sugar content and less than 12.5% in price.  The most expensive candy with the highest sugar content is Milky Way Simply Caramel.  The sugar content is almost 100%, and the price is above the 75 percentile. 
+
+#### Line Chart of Candy Production
+
+Now I will be using the Candy Production dataset to make a line chart.  This data displays specific dates and how production was during that month.  This data is compared to the 2012 results of the production of the candy.
+
+```{r Line Chart}
+ggplot(data = candy_production, aes(x= observation_date, y= IPG3113N))+
+  geom_line()+
+  geom_smooth()+
+  labs(title = "Monthly Candy Production", x= "Year", y= "As percent of 2012 production")
+```
+
+#### Bar Chart of Ingredients
+
+```{r Bar Chart}
+#Original Bar Chart
+ggplot(data = candy_data, aes(x=chocolate)) +
+  geom_bar()
+
+#New Bar Chart
+candyFeatures <- candy_data %>% select(2:10)
+candyFeatures[] <- lapply(candyFeatures, "as.logical")
+ggplot(data = candyFeatures, aes(x=chocolate)) +
+  geom_bar()
+
+```
+

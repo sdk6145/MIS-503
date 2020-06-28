@@ -1,0 +1,120 @@
+# Intro to Using Lubridate Package
+
+```{r Loading libraries}
+library(tidyverse)
+library(lubridate)
+
+```
+
+## Basics of Lubridate
+### Working with Dates
+```{r working_dates}
+this_day <- today()
+this_day
+
+date_ex <- "2019-05-12"
+
+y <- year(date_ex)
+m <- month(date_ex)
+d <- day(date_ex)
+
+rbind(y,m,d)
+
+# you can also get the exact day of the week
+
+w <- wday(date_ex)
+w
+
+#you can also see what day of the year it is.
+
+dayofyear <- yday(date_ex)
+dayofyear
+```
+
+### Working with time
+```{r}
+this_moment <- now()
+this_moment
+
+hr <- hour(this_moment)
+minu <- minute(this_moment)
+sec <- second(this_moment)
+
+rbind(hr, minu, sec)
+```
+
+### Parse Dates
+```{r}
+#lubridate recognizes the format of various dates entered.
+my_date <- ymd("1989-05-17")
+my_date
+
+my_date2 <- ymd("1989 May 17")
+my_date3 <- mdy("March 12, 1975")
+my_date4 <- dmy(23081985)
+```
+
+### Time Zones
+```{r}
+nyc <- now("America/New_York")
+nyc
+
+anchorage <- now("America/Anchorage")
+anchorage
+
+#your flight is the day after tomorrow (NYtime), so we want to add two days to nyc.  one nice aspect of lubridate
+
+depart <- nyc + days(2)
+depart
+
+depart <- update(depart, hours = 17, minutes =34)
+depart
+```
+
+
+### Arithmetic
+
+```{r}
+start_date <- mdy(09012019)
+graduation_date <- mdy(08152020)
+
+how_long <- interval(start_date, graduation_date)
+how_long
+
+as.period(how_long)
+```
+
+### Changing Existing Data
+
+```{r, eval=FALSE}
+install.packages("nycflights13")
+```
+
+```{r}
+library("nycflights13")
+flights
+
+make_datetime_100 <- function(year, month, day, time) {
+  make_datetime(year, month,day,time %/% 100, time %% 100)
+}
+
+flights_dt <- flights %>%
+  filter(!is.na(dep_time)) %>%
+  mutate(
+    dep_time = make_datetime_100(year, month, day, dep_time),
+    arr_time = make_datetime_100(year, month, day, arr_time),
+    sched_dep_time = make_datetime_100(year, month, day, sched_dep_time),
+    sched_arr_time = make_datetime_100(year, month,day,sched_arr_time)
+  ) %>%
+  select(origin,dest, ends_with("time"))
+
+flights_dt <- flights_dt  %>% 
+  mutate(
+    actual_air_time = interval(dep_time, arr_time),
+    actual_air_time = as.period(actual_air_time),
+    actual_air_time_minutes = arr_time - dep_time,
+    scheduled_air_time = as.period(interval(sched_dep_time, sched_arr_time)),
+    scheduled_air_time_minutes = sched_arr_time - sched_dep_time
+  )
+```
+
